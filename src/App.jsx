@@ -5,6 +5,9 @@ function App() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const [newPost, setNewPost] = useState({ title: '', body: '' });
+  const [error, setError] = useState(null);
+
   useEffect(() => {
     fetch('https://jsonplaceholder.typicode.com/posts')
       .then(response => response.json())
@@ -13,30 +16,91 @@ function App() {
         setLoading(false);
       })
       .catch(error => {
+        setError(error);
         console.error('Error fetching posts:', error);
         setLoading(false);
       });
   }, []);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (!newPost.title.trim() || !newPost.body.trim()) {
+      alert("Entrambi i campi sono obbligatori!");
+      return;
+    }
+
+    const simulatedPost = {
+      ...newPost,
+      id: Date.now(), // ID temporaneo per la lista
+    };
+
+    setPosts([simulatedPost, ...posts]); // Aggiunge in cima
+    setNewPost({ title: '', body: '' }); // Resetta il form
+  };
 
   return (
     <>
       {loading ? (
         <p>Loading...</p>
       ) : (
-        <div className='container'>
+        <>
+          <div className='container my-3'>
 
-          <ul>
-            {posts.map(post => (
-              <div key={post.id} className='card my-3 shadow p-3 mb-5 bg-body'>
-                <li className='list-group-item my-3'>
-                  <span className='fw-bold'>Title: </span>{post.title}
-                  <br />
-                  <span className='fw-bold'>Body: </span>{post.body}
-                </li>
-              </div>
-            ))}
-          </ul>
-        </div>
+            <h1 className='text-center'>Add New Post</h1>
+
+            <div className='card my-3 shadow p-3 mb-5 bg-body'>
+
+              <form onSubmit={handleSubmit}>
+
+                <div className='mb-3'>
+                  <label htmlFor='title' className='form-label'>
+                    Title
+                  </label>
+                  <input
+                    type='text'
+                    className='form-control'
+                    id='title'
+                    value={newPost.title}
+                    onChange={(e) => setNewPost({ ...newPost, title: e.target.value })}
+                  />
+                </div>
+
+                <div className='mb-3'>
+                  <label htmlFor='body' className='form-label'>
+                    Body
+                  </label>
+                  <textarea
+                    className='form-control'
+                    id='body'
+                    rows='3'
+                    value={newPost.body}
+                    onChange={(e) => setNewPost({ ...newPost, body: e.target.value })}
+                  />
+                </div>
+
+                <button type='submit' className='btn btn-primary'>
+                  Add Post
+                </button>
+
+              </form>
+
+            </div>
+          </div>
+
+          <div className='container'>
+
+            <div className='card my-3 shadow p-3 mb-5 bg-body'>
+              {posts.map(post => (
+                <section key={post.id} className='my-3 p-3 border-bottom'>
+
+                  <h3 className='fw-bold'>{post.title}</h3>
+                  <p>{post.body}</p>
+                </section>
+              ))}
+            </div>
+          </div>
+        </>
       )}
     </>
   )
