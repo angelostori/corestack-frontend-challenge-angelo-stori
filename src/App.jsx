@@ -12,6 +12,9 @@ function App() {
 
   const [searchTerm, setSearchTerm] = useState('');
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const postsPerPage = 10;
+
 
   useEffect(() => {
     fetch('https://jsonplaceholder.typicode.com/posts')
@@ -43,6 +46,23 @@ function App() {
   const filteredPosts = posts.filter(post =>
     post.title.toLowerCase().includes(searchTerm.toLowerCase()) || post.body.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const highlightText = (text, highlight) => {
+    if (!highlight.trim()) return text;
+
+    const parts = text.split(new RegExp(`(${highlight})`, 'gi'));
+    return (
+      <span>
+        {parts.map((part, i) =>
+          part.toLowerCase() === highlight.toLowerCase() ? (
+            <mark key={i} style={{ padding: 0, backgroundColor: '#ffeb3b' }}>{part}</mark>
+          ) : (
+            part
+          )
+        )}
+      </span>
+    );
+  };
 
   return (
     <>
@@ -112,8 +132,12 @@ function App() {
               ) : (filteredPosts.map(post => (
                 <section key={post.id} className='my-3 p-3 border-bottom'>
 
-                  <h3 className='fw-bold'>{post.title}</h3>
-                  <p>{post.body}</p>
+                  <h3 className='fw-bold'>
+                    {highlightText(post.title, searchTerm)}
+                  </h3>
+                  <p>
+                    {highlightText(post.body, searchTerm)}
+                  </p>
                 </section>
               )))}
             </div>
