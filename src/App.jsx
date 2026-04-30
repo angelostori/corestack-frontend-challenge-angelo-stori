@@ -8,6 +8,8 @@ function App() {
   const [newPost, setNewPost] = useState({ title: '', body: '' });
   const [error, setError] = useState(null);
 
+  const [formError, setFormError] = useState(false);
+
   useEffect(() => {
     fetch('https://jsonplaceholder.typicode.com/posts')
       .then(response => response.json())
@@ -24,19 +26,15 @@ function App() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
     if (!newPost.title.trim() || !newPost.body.trim()) {
-      alert("Entrambi i campi sono obbligatori!");
+      setFormError(true);
       return;
     }
 
-    const simulatedPost = {
-      ...newPost,
-      id: Date.now(), // ID temporaneo per la lista
-    };
-
-    setPosts([simulatedPost, ...posts]); // Aggiunge in cima
-    setNewPost({ title: '', body: '' }); // Resetta il form
+    const simulatedPost = { ...newPost, id: Date.now() };
+    setPosts([simulatedPost, ...posts]);
+    setNewPost({ title: '', body: '' });
+    setFormError(false);
   };
 
   return (
@@ -79,6 +77,8 @@ function App() {
                   />
                 </div>
 
+                {formError && <p className="text-danger">Per favore, compila tutti i campi.</p>}
+
                 <button type='submit' className='btn btn-primary'>
                   Add Post
                 </button>
@@ -89,6 +89,8 @@ function App() {
           </div>
 
           <div className='container'>
+
+            <h2 className='text-center'>Posts</h2>
 
             <div className='card my-3 shadow p-3 mb-5 bg-body'>
               {posts.map(post => (
