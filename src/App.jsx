@@ -64,6 +64,13 @@ function App() {
     );
   };
 
+  const indexOfLastPost = currentPage * postsPerPage;
+  const indexOfFirstPost = indexOfLastPost - postsPerPage;
+
+  const currentPosts = filteredPosts.slice(indexOfFirstPost, indexOfLastPost);
+
+  const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
+
   return (
     <>
       {loading ? (
@@ -141,6 +148,25 @@ function App() {
                 </section>
               )))}
             </div>
+
+            <div className="d-flex justify-content-center gap-2 my-4">
+              <button
+                className="btn btn-outline-primary"
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}>
+                Prev
+              </button>
+
+              <span className="align-self-center">Pagina {currentPage} di {totalPages}</span>
+
+              <button
+                className="btn btn-outline-primary"
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}>
+                Next
+              </button>
+            </div>
+
           </div>
         </>
       )}
