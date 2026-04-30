@@ -10,6 +10,9 @@ function App() {
 
   const [formError, setFormError] = useState(false);
 
+  const [searchTerm, setSearchTerm] = useState('');
+
+
   useEffect(() => {
     fetch('https://jsonplaceholder.typicode.com/posts')
       .then(response => response.json())
@@ -36,6 +39,10 @@ function App() {
     setNewPost({ title: '', body: '' });
     setFormError(false);
   };
+
+  const filteredPosts = posts.filter(post =>
+    post.title.toLowerCase().includes(searchTerm.toLowerCase()) || post.body.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <>
@@ -92,14 +99,23 @@ function App() {
 
             <h2 className='text-center'>Posts</h2>
 
+            <input
+              type="text"
+              className="form-control mb-4"
+              placeholder="Cerca un post..."
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+
             <div className='card my-3 shadow p-3 mb-5 bg-body'>
-              {posts.map(post => (
+              {filteredPosts.length === 0 ? (
+                <p className='text-center'>Nessun post trovato.</p>
+              ) : (filteredPosts.map(post => (
                 <section key={post.id} className='my-3 p-3 border-bottom'>
 
                   <h3 className='fw-bold'>{post.title}</h3>
                   <p>{post.body}</p>
                 </section>
-              ))}
+              )))}
             </div>
           </div>
         </>
