@@ -1,6 +1,24 @@
-import { use, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
+
+const highlightText = (text, highlight) => {
+  if (!highlight.trim()) return text;
+
+  const parts = text.split(new RegExp(`(${highlight})`, 'gi'));
+  return (
+    <span>
+      {parts.map((part, i) =>
+        part.toLowerCase() === highlight.toLowerCase() ? (
+          <mark key={i} style={{ padding: 0, backgroundColor: '#ffeb3b' }}>{part}</mark>
+        ) : (
+          part
+        )
+      )}
+    </span>
+  );
+};
 
 function App() {
+
 
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -15,6 +33,7 @@ function App() {
   const [currentPage, setCurrentPage] = useState(1);
   const postsPerPage = 10;
 
+  const [showSuccess, setShowSuccess] = useState(false);
 
   useEffect(() => {
     fetch('https://jsonplaceholder.typicode.com/posts')
@@ -41,28 +60,13 @@ function App() {
     setPosts([simulatedPost, ...posts]);
     setNewPost({ title: '', body: '' });
     setFormError(false);
+    setShowSuccess(true);
+    setTimeout(() => setShowSuccess(false), 3000);
   };
 
   const filteredPosts = posts.filter(post =>
     post.title.toLowerCase().includes(searchTerm.toLowerCase()) || post.body.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
-  const highlightText = (text, highlight) => {
-    if (!highlight.trim()) return text;
-
-    const parts = text.split(new RegExp(`(${highlight})`, 'gi'));
-    return (
-      <span>
-        {parts.map((part, i) =>
-          part.toLowerCase() === highlight.toLowerCase() ? (
-            <mark key={i} style={{ padding: 0, backgroundColor: '#ffeb3b' }}>{part}</mark>
-          ) : (
-            part
-          )
-        )}
-      </span>
-    );
-  };
 
   const indexOfLastPost = currentPage * postsPerPage;
   const indexOfFirstPost = indexOfLastPost - postsPerPage;
@@ -112,6 +116,7 @@ function App() {
                 </div>
 
                 {formError && <p className="text-danger">Please fill out all fields</p>}
+                {showSuccess && <p className="text-success">Post added successfully!</p>}
 
                 <button type='submit' className='btn btn-primary'>
                   Add Post
