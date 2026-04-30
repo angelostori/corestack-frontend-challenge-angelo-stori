@@ -23,11 +23,20 @@ function App() {
       {loading ? (
         <p>Loading...</p>
       ) : (
-        <ul>
-          {posts.map(post => (
-            <li key={post.id}>{post.title}</li>
-          ))}
-        </ul>
+        <div className='container'>
+
+          <ul>
+            {posts.map(post => (
+              <div key={post.id} className='card my-3 shadow p-3 mb-5 bg-body'>
+                <li className='list-group-item my-3'>
+                  <span className='fw-bold'>Title: </span>{post.title}
+                  <br />
+                  <span className='fw-bold'>Body: </span>{post.body}
+                </li>
+              </div>
+            ))}
+          </ul>
+        </div>
       )}
     </>
   )
